@@ -355,15 +355,41 @@
 
 ### 10일차(2025.06.11 수)
 #### 오전(3시간)
-* 🔊 [3장 클래스 컴포넌트와 컴포넌트의 라이프 사이클](./workspace-ins/ch03-class)
+* 🔊 [3장 클래스 컴포넌트와 컴포넌트의 라이프 사이클](./workspace-ins/ch03-class#3장-클래스-컴포넌트와-컴포넌트의-라이프-사이클)
   - 🧑‍💻 [02 클래스 컴포넌트 - 함수형 컴포넌트와 같이 사용](./workspace-ins/ch03-class/02-functionbase)
   - 🧑‍💻 [03 클래스 컴포넌트 - 컴포넌트의 라이프 사이클](./workspace-ins/ch03-class/03-lifecycle)
 
 #### 오후(3시간)
 * 🔊 [4장 리액트 훅](./workspace-ins/ch04-hooks#4장-리액트-훅)
-  - 🧑‍💻 [01 useState - 상태 관리](./workspace-ins/04-hooks/01-useState)
-  - 🧑‍💻 [02 useEffect - side effect 관리](./workspace-ins/04-hooks/02-useEffect)
-  
+  - 🔊 [useState](./workspace-ins/ch04-hooks#usestate)
+    + 🧑‍💻 [01 useState - 상태 관리](./workspace-ins/ch04-hooks/01-useState)
+  - 🔊 [useEffect](./workspace-ins/ch04-hooks#useeffect)
+    + 🧑‍💻 [02 useEffect - side effect 관리](./workspace-ins/ch04-hooks/02-useEffect)
+
+### 11일차(2025.06.12 목)
+#### 오전(3시간)
+- 🔊 [useReducer](./workspace-ins/ch04-hooks#usereducer)
+  + 🧑‍💻 [03 useReducer - 상태 관리 로직을 한곳에](./workspace-ins/ch04-hooks/03-useReducer)
+
+#### 오후(3시간)
+- 🔊 [useRef](./workspace-ins/ch04-hooks#useref)
+  + 🧑‍💻 [04 useRef - 값이 유지되는 데이터 관리, DOM 엘리먼트 참조](./workspace-ins/ch04-hooks/04-useRef)
+
+### 12일차(2025.06.13 금)
+#### 오전(3시간)
+- 🔊 [useMemo](./workspace-ins/ch04-hooks#usememo)
+  + 🧑‍💻 [05 useMemo - 함수의 반환값을 memoize](./workspace-ins/ch04-hooks/05-useMemo)
+- 🔊 [useCallback](./workspace-ins/ch04-hooks#usecallback)
+  + 🧑‍💻 [06 useCallback(함수 자체를 memoize), React.memo(컴포넌트를 memoize)](./workspace-ins/ch04-hooks/06-useCallback)
+
+#### 오후(3시간 반)
+- 🔊 [리액트 컴파일러](./workspace-ins/ch04-hooks#리액트-컴파일러)
+  + 🧑‍💻 [07 React Compiler를 사용한 메모이제이션](./workspace-ins/ch04-hooks/07-useCallback-RC)
+* 12장 앱 개발
+  * 12-1 Todo List
+    - 🧑‍💻 [01 기본 Todo List](./workspace-ins/ch12-app/todolist/01-basic)
+    - 🧑‍💻 [02 컨테이너 컴포넌트 추가](./workspace-ins/ch12-app/todolist/02-container)
+
 # 5. 참고 사이트
 
 ## 온라인 코드 편집기(HTML, CSS, JS)

@@ -292,6 +292,14 @@ const cachedFn = useCallback(fn, dependencies);
 * 커스텀 훅의 이름은 리액트 훅임을 명시적으로 나타내기 위해 `useXXX` 형태로 작성하는 것이 권장됨
   - 예: `useFetch`, `useLocalStorage` 등
 
+### Custom Hook의 장점
+
+1. 코드 재사용성: 여러 컴포넌트에서 동일한 로직을 재사용할 수 있음
+2. 관심사 분리: 비즈니스 로직을 컴포넌트에서 분리하여 컴포넌트를 더 단순하게 만듦
+3. 테스트 용이성: 로직을 독립적으로 테스트할 수 있음
+4. 유지보수성: 로직이 한 곳에 모여있어 수정이 용이함
+5. 추상화: 복잡한 로직을 간단한 인터페이스로 추상화할 수 있음
+
 ## 훅 사용 시 주의사항
 * 클래스 기반 컴포넌트에서는 훅을 사용할 수 없음
   - 훅은 함수형 컴포넌트 전용이며, 상태 관리 및 생명 주기 관련 기능을 함수형 컴포넌트 내에서만 사용할 수 있음
@@ -300,205 +308,6 @@ const cachedFn = useCallback(fn, dependencies);
   - 훅의 호출 순서가 바뀌면 리액트는 훅의 상태를 추적할 수 없어서 에러가 발생할 수 있음
 * 훅은 항상 동일한 순서로 호출되어야 함
   - 각 렌더링마다 동일한 순서로 훅이 호출되어야 하므로, 조건문이나 반복문 내에서 훅을 호출하는 패턴을 피해야 함
-
-# 리액트 19 새로운 훅들
-
-리액트 19에서는 서버 컴포넌트와 폼 처리를 위한 새로운 훅들이 추가됨
-
-## use
-
-* Promise와 Context를 조건부로 읽을 수 있는 새로운 API
-* 기존 훅과 달리 조건문 안에서도 사용 가능
-* Suspense와 연동하여 비동기 데이터 처리를 간소화
-
-### API
-```jsx
-const value = use(resource);
-```
-
-#### 매개변수
-* `resource`: Promise 또는 Context 객체
-  - Promise인 경우: 해당 Promise가 완료될 때까지 컴포넌트를 중단(suspend)
-  - Context인 경우: Context의 현재 값을 반환
-
-#### 리턴값
-* Promise의 결과값 또는 Context의 값
-
-### 예시
-```jsx
-function UserProfile({ userPromise }) {
-  const user = use(userPromise); // Promise가 완료될 때까지 기다림
-  
-  return (
-    <div>
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-    </div>
-  );
-}
-
-// 조건부 사용도 가능
-function ConditionalData({ condition, dataPromise }) {
-  if (condition) {
-    const data = use(dataPromise);
-    return <div>{data}</div>;
-  }
-  return <div>조건이 맞지 않음</div>;
-}
-```
-
-## useActionState
-
-* 폼 액션의 상태를 관리하는 훅
-* 폼 제출 후 결과와 pending 상태를 쉽게 관리
-* 서버 액션과 함께 사용하여 폼 처리를 간소화
-
-### API
-```jsx
-const [state, formAction, isPending] = useActionState(action, initialState, permalink?);
-```
-
-#### 매개변수
-* `action`: 폼이 제출되거나 버튼이 클릭될 때 호출될 함수
-* `initialState`: 초기 상태값
-* `permalink` (선택): SEO를 위한 고유 페이지 URL
-
-#### 리턴값
-* `state`: 현재 상태값
-* `formAction`: 폼의 action 속성에 전달할 함수
-* `isPending`: 액션이 실행 중인지 여부
-
-### 예시
-```jsx
-async function updateName(previousState, formData) {
-  try {
-    const name = formData.get('name');
-    // 서버에 이름 업데이트 요청
-    await updateUserName(name);
-    return { message: '이름이 성공적으로 업데이트되었습니다.' };
-  } catch (error) {
-    return { message: '오류가 발생했습니다.' };
-  }
-}
-
-function UserForm() {
-  const [state, formAction, isPending] = useActionState(updateName, { message: '' });
-
-  return (
-    <form action={formAction}>
-      <input type="text" name="name" required />
-      <button type="submit" disabled={isPending}>
-        {isPending ? '저장 중...' : '저장'}
-      </button>
-      {state.message && <p>{state.message}</p>}
-    </form>
-  );
-}
-```
-
-## useFormStatus
-
-* 상위 form 요소의 상태 정보를 제공하는 훅
-* 폼이 제출 중인지, 어떤 데이터가 제출되었는지 등을 확인
-* 자식 컴포넌트에서 부모 폼의 상태에 접근할 때 유용
-
-### API
-```jsx
-const { pending, data, method, action } = useFormStatus();
-```
-
-#### 매개변수
-* 매개변수 없음
-
-#### 리턴값
-* `pending`: 상위 form이 제출 중인지 여부 (boolean)
-* `data`: 제출된 FormData 객체
-* `method`: HTTP 메소드 ('GET' 또는 'POST')
-* `action`: form의 action 속성에 전달된 함수 참조
-
-### 예시
-```jsx
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  
-  return (
-    <button type="submit" disabled={pending}>
-      {pending ? '제출 중...' : '제출'}
-    </button>
-  );
-}
-
-function MyForm() {
-  async function handleSubmit(formData) {
-    // 폼 제출 로직
-    await submitData(formData);
-  }
-
-  return (
-    <form action={handleSubmit}>
-      <input type="text" name="username" />
-      <SubmitButton /> {/* 자식 컴포넌트에서 폼 상태 접근 */}
-    </form>
-  );
-}
-```
-
-## useOptimistic
-
-* 비동기 요청 중 낙관적 UI 업데이트를 제공하는 훅
-* 서버 응답을 기다리지 않고 UI를 먼저 업데이트하여 더 나은 사용자 경험 제공
-* 요청이 실패할 경우 자동으로 이전 상태로 롤백
-
-### API
-```jsx
-const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
-```
-
-#### 매개변수
-* `state`: 실제 상태값
-* `updateFn`: 낙관적 업데이트를 위한 함수 `(currentState, optimisticValue) => newState`
-
-#### 리턴값
-* `optimisticState`: 낙관적으로 업데이트된 상태값
-* `addOptimistic`: 낙관적 업데이트를 트리거하는 함수
-
-### 예시
-```jsx
-function LikeButton({ postId, initialLikes }) {
-  const [likes, setLikes] = useState(initialLikes);
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    likes,
-    (currentLikes, amount) => currentLikes + amount
-  );
-
-  async function handleLike() {
-    // 즉시 UI 업데이트 (낙관적)
-    addOptimisticLike(1);
-    
-    try {
-      // 서버에 실제 요청
-      const newLikes = await likePost(postId);
-      setLikes(newLikes);
-    } catch (error) {
-      // 실패 시 자동으로 이전 상태로 롤백됨
-      console.error('좋아요 실패:', error);
-    }
-  }
-
-  return (
-    <button onClick={handleLike}>
-      ❤️ {optimisticLikes}
-    </button>
-  );
-}
-```
-
-### 새로운 훅들의 특징
-
-* 서버 컴포넌트 지원: 리액트 19의 새로운 훅들은 서버 컴포넌트와 함께 작동하도록 설계됨
-* 향상된 폼 처리: `useActionState`와 `useFormStatus`는 폼 제출과 상태 관리를 크게 개선
-* 더 나은 UX: `useOptimistic`은 즉각적인 피드백으로 사용자 경험을 향상
-* 조건부 사용: `use` 훅은 조건부로 사용할 수 있어 더 유연한 데이터 로딩 가능
 
 # 리액트 컴파일러
 
@@ -792,3 +601,203 @@ function Post({ post, big }) {
 * 기존 프로젝트는 점진적 마이그레이션 계획
 * 리액트의 규칙을 준수하는 코드 작성 습관 중요
 * 충분한 테스트 커버리지 확보 후 도입
+
+# 리액트 19 새로운 훅들
+
+리액트 19에서는 서버 컴포넌트와 폼 처리를 위한 새로운 훅들이 추가됨
+
+## use
+
+* Promise와 Context를 조건부로 읽을 수 있는 새로운 API
+* 기존 훅과 달리 조건문 안에서도 사용 가능
+* Suspense와 연동하여 비동기 데이터 처리를 간소화
+
+### API
+```jsx
+const value = use(resource);
+```
+
+#### 매개변수
+* `resource`: Promise 또는 Context 객체
+  - Promise인 경우: 해당 Promise가 완료될 때까지 컴포넌트를 중단(suspend)
+  - Context인 경우: Context의 현재 값을 반환
+
+#### 리턴값
+* Promise의 결과값 또는 Context의 값
+
+### 예시
+```jsx
+function UserProfile({ userPromise }) {
+  const user = use(userPromise); // Promise가 완료될 때까지 기다림
+  
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+    </div>
+  );
+}
+
+// 조건부 사용도 가능
+function ConditionalData({ condition, dataPromise }) {
+  if (condition) {
+    const data = use(dataPromise);
+    return <div>{data}</div>;
+  }
+  return <div>조건이 맞지 않음</div>;
+}
+```
+
+## useActionState
+
+* 폼 액션의 상태를 관리하는 훅
+* 폼 제출 후 결과와 pending 상태를 쉽게 관리
+* 서버 액션과 함께 사용하여 폼 처리를 간소화
+
+### API
+```jsx
+const [state, formAction, isPending] = useActionState(action, initialState, permalink?);
+```
+
+#### 매개변수
+* `action`: 폼이 제출되거나 버튼이 클릭될 때 호출될 함수
+* `initialState`: 초기 상태값
+* `permalink` (선택): SEO를 위한 고유 페이지 URL
+
+#### 리턴값
+* `state`: 현재 상태값
+* `formAction`: 폼의 action 속성에 전달할 함수
+* `isPending`: 액션이 실행 중인지 여부
+
+### 예시
+```jsx
+async function updateName(previousState, formData) {
+  try {
+    const name = formData.get('name');
+    // 서버에 이름 업데이트 요청
+    await updateUserName(name);
+    return { message: '이름이 성공적으로 업데이트되었습니다.' };
+  } catch (error) {
+    return { message: '오류가 발생했습니다.' };
+  }
+}
+
+function UserForm() {
+  const [state, formAction, isPending] = useActionState(updateName, { message: '' });
+
+  return (
+    <form action={formAction}>
+      <input type="text" name="name" required />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '저장 중...' : '저장'}
+      </button>
+      {state.message && <p>{state.message}</p>}
+    </form>
+  );
+}
+```
+
+## useFormStatus
+
+* 상위 form 요소의 상태 정보를 제공하는 훅
+* 폼이 제출 중인지, 어떤 데이터가 제출되었는지 등을 확인
+* 자식 컴포넌트에서 부모 폼의 상태에 접근할 때 유용
+
+### API
+```jsx
+const { pending, data, method, action } = useFormStatus();
+```
+
+#### 매개변수
+* 매개변수 없음
+
+#### 리턴값
+* `pending`: 상위 form이 제출 중인지 여부 (boolean)
+* `data`: 제출된 FormData 객체
+* `method`: HTTP 메소드 ('GET' 또는 'POST')
+* `action`: form의 action 속성에 전달된 함수 참조
+
+### 예시
+```jsx
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? '제출 중...' : '제출'}
+    </button>
+  );
+}
+
+function MyForm() {
+  async function handleSubmit(formData) {
+    // 폼 제출 로직
+    await submitData(formData);
+  }
+
+  return (
+    <form action={handleSubmit}>
+      <input type="text" name="username" />
+      <SubmitButton /> {/* 자식 컴포넌트에서 폼 상태 접근 */}
+    </form>
+  );
+}
+```
+
+## useOptimistic
+
+* 비동기 요청 중 낙관적 UI 업데이트를 제공하는 훅
+* 서버 응답을 기다리지 않고 UI를 먼저 업데이트하여 더 나은 사용자 경험 제공
+* 요청이 실패할 경우 자동으로 이전 상태로 롤백
+
+### API
+```jsx
+const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
+```
+
+#### 매개변수
+* `state`: 실제 상태값
+* `updateFn`: 낙관적 업데이트를 위한 함수 `(currentState, optimisticValue) => newState`
+
+#### 리턴값
+* `optimisticState`: 낙관적으로 업데이트된 상태값
+* `addOptimistic`: 낙관적 업데이트를 트리거하는 함수
+
+### 예시
+```jsx
+function LikeButton({ postId, initialLikes }) {
+  const [likes, setLikes] = useState(initialLikes);
+  const [optimisticLikes, addOptimisticLike] = useOptimistic(
+    likes,
+    (currentLikes, amount) => currentLikes + amount
+  );
+
+  async function handleLike() {
+    // 즉시 UI 업데이트 (낙관적)
+    addOptimisticLike(1);
+    
+    try {
+      // 서버에 실제 요청
+      const newLikes = await likePost(postId);
+      setLikes(newLikes);
+    } catch (error) {
+      // 실패 시 자동으로 이전 상태로 롤백됨
+      console.error('좋아요 실패:', error);
+    }
+  }
+
+  return (
+    <button onClick={handleLike}>
+      ❤️ {optimisticLikes}
+    </button>
+  );
+}
+```
+
+### 새로운 훅들의 특징
+
+* 서버 컴포넌트 지원: 리액트 19의 새로운 훅들은 서버 컴포넌트와 함께 작동하도록 설계됨
+* 향상된 폼 처리: `useActionState`와 `useFormStatus`는 폼 제출과 상태 관리를 크게 개선
+* 더 나은 UX: `useOptimistic`은 즉각적인 피드백으로 사용자 경험을 향상
+* 조건부 사용: `use` 훅은 조건부로 사용할 수 있어 더 유연한 데이터 로딩 가능
+
