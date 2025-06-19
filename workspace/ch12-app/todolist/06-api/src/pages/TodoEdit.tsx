@@ -21,7 +21,7 @@ function TodoEdit() {
   });
 
   const updateTodo = (formData: TodoItem) => {
-    console.log('API 서버에 수정 요청', formData)
+    console.log('API 서버에 수정 요청', formData);
     // TODO API 서버에 수정 요청
 
     alert('할일이 수정 되었습니다.');
