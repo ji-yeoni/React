@@ -36,7 +36,10 @@ function CommentNew() {
     <>
       <h4>댓글 등록</h4>
       <form onSubmit={ handleAddComment }>
-        <textarea value={ content } name="content" onChange={ e => setContent(e.target.value) } rows={3} cols={30} placeholder="댓글 내용" /><br />
+        <textarea 
+        value={ content } 
+        name="content" 
+        onChange={ e => setContent(e.target.value) } rows={3} cols={30} placeholder="댓글 내용" /><br />
         <button type="submit">등록</button>
       </form>
     </>
