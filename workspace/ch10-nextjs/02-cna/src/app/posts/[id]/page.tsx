@@ -15,17 +15,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 // 이 함수가 반환한 배열만큼 SSG 페이지를 미리 생성
-// 빌드하면 .next/server/app/posts/1.html, 2.html, 4.html
-export function generateStaticParams() {
-  // 공지글에 대한 fetch 작업
-  const posts = [
-    { id: "1", title: "1번 제목" },
-    { id: "2", slug: "2", sid: "3", title: "2번 제목" },
-    { id: "4", slug: "2", sid: "3", title: "4번 제목" },
-  ];
+// 빌드하면 .next/server/app/posts/1.html, 2.html, 3.html
+// export function generateStaticParams() {
+//   // 공지글에 대한 fetch 작업
+//   const posts = [
+//     { id: '1', title: '1번 제목' },
+//     { id: '2', slug: '2', sid: '3', title: '2번 제목' },
+//     { id: '3', slug: '2', sid: '3', title: '4번 제목' },
+//   ];
 
-  return posts;
-}
+//   return posts;
+// }
 
 export default async function InfoPage({ params }: { params: Promise<{ id: string }> }) {
   const pageParams = await params; // Next.js 15 부터 params는 비동기 처리 필요
