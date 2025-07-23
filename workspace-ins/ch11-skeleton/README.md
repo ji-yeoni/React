@@ -1965,7 +1965,7 @@ export default function CommentNew({ _id }: { _id: string }) {
   ```
 
   - app/(user)/login/page.tsx 파일의 `<form>...</form>` 영역 잘라서 리턴 값에 추가 후 수정
-  - ```action={"/"}``` -> `action={ formAction }`
+  - ```action="/"``` -> `action={ formAction }`
   - `이메일은 필수입니다.` -> `{ userState?.ok === 0 && userState.errors?.email?.msg }`
   - `비밀번호는 필수입니다.` -> `{ userState?.ok === 0 && userState.errors?.password?.msg }`
 
@@ -2024,7 +2024,7 @@ export default function CommentNew({ _id }: { _id: string }) {
   import useUserStore from "@/zustand/userStore";
   ...
   export default function LoginForm() {
-    const { setUser } = useUserStore(state => state);
+    const setUser = useUserStore(state => state.setUser);
 
     useEffect(() => {
       if(userState?.ok){
