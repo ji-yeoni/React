@@ -1,7 +1,18 @@
+'use client';
+
+import useUserStore from "@/zustand/userStore";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Header() {
+  const { user, resetUser } = useUserStore();
+
+  const handleLogout = (e: React.FormEvent) => {
+    e.preventDefault();
+    resetUser();
+    alert('로그아웃 되었습니다.');
+  };
+
   return (
     <header className="px-8 text-gray-800 duration-500 ease-in-out min-w-80 bg-slate-100 dark:bg-gray-600 dark:text-gray-200 transition-color">
       <nav className="flex flex-wrap items-center justify-center p-4 md:flex-nowrap md:justify-between">
@@ -21,23 +32,25 @@ export default function Header() {
 
         <div className="flex items-center justify-end order-1 w-1/2 md:order-2 md:w-auto">
 
-        <form action="/">
-          <p className="flex items-center">
-            <Image 
-              className="w-8 mr-2 rounded-full" 
-              src="https://fesp-api.koyeb.app/market/files/openmarket/user-muzi.png"
-              width="32"
-              height="32"
-              alt="용쌤 프로필 이미지" />
-            용쌤님 :)
-            <button type="submit" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-gray-900 rounded hover:bg-amber-400">로그아웃</button>
-          </p>
-        </form>
-
-          <div className="flex justify-end">
-            <Link href="/login" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-orange-500 rounded hover:bg-amber-400">로그인</Link>
-            <Link href="/signup" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-gray-900 rounded hover:bg-amber-400">회원가입</Link>
-          </div>
+          { user ? (
+            <form onSubmit={ handleLogout }>
+              <p className="flex items-center">
+                <Image 
+                  className="w-8 mr-2 rounded-full" 
+                  src={ user.image ? `https://fesp-api.koyeb.app/market/${user.image}` : `/images/front-end.png` }
+                  width="32"
+                  height="32"
+                  alt={`${user.name} 프로필 이미지`} />
+                {user.name} 님 :)
+                <button type="submit" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-gray-900 rounded hover:bg-amber-400">로그아웃</button>
+              </p>
+            </form>
+          ) : (
+            <div className="flex justify-end">
+              <Link href="/login" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-orange-500 rounded hover:bg-amber-400">로그인</Link>
+              <Link href="/signup" className="px-2 py-1 ml-2 text-sm font-semibold text-white bg-gray-900 rounded hover:bg-amber-400">회원가입</Link>
+            </div>
+          ) }
 
           <button
             type="button"

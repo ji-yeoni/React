@@ -1,8 +1,28 @@
+'use client';
+
+import { createUser } from "@/data/actions/user";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
 export default function SignupForm() {
+
+  // 서버 액션 호출
+  const [ state, formAction, isLoading ] = useActionState(createUser, null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if(state?.ok){
+      alert('회원 가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+      router.replace('/login');
+    }else if(state?.ok === 0 && !state?.errors){ // 입력값 검증에러가 아닌 경우
+      alert(state?.message);
+    }
+  }, [state]);
+
   return (
-    <form action="/">
+    <form action={ formAction }>
       <div className="mb-4">
         <label className="block mb-2 text-gray-700 dark:text-gray-200" htmlFor="name">이름</label>
         <input
@@ -13,7 +33,7 @@ export default function SignupForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-orange-400 dark:bg-gray-700"
           name="name"
         />
-        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">이름은 필수입니다.</p>
+        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">{ state?.ok === 0 && state.errors?.name?.msg }</p>
       </div>
       <div className="mb-4">
         <label className="block mb-2 text-gray-700 dark:text-gray-200" htmlFor="email">이메일</label>
@@ -25,7 +45,7 @@ export default function SignupForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-orange-400 dark:bg-gray-700"
           name="email"
         />
-        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">이메일은 필수입니다.</p>
+        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">{ state?.ok === 0 && state.errors?.email?.msg }</p>
       </div>
       <div className="mb-4">
         <label className="block mb-2 text-gray-700 dark:text-gray-200" htmlFor="password">비밀번호</label>
@@ -37,7 +57,7 @@ export default function SignupForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-orange-400 dark:bg-gray-700"
           name="password"
         />
-        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">비밀번호는 필수입니다.</p>
+        <p className="mt-1 ml-2 text-sm text-red-500 dark:text-red-400">{ state?.ok === 0 && state.errors?.password?.msg }</p>
       </div>
 
       <div className="mb-4">
@@ -53,9 +73,9 @@ export default function SignupForm() {
       </div>
 
       <div className="flex items-center justify-center mt-10">
-        <button type="submit" className="px-4 py-1 ml-2 text-base font-semibold text-white bg-orange-500 rounded hover:bg-amber-400">회원가입</button>
+        <button disabled={ isLoading } type="submit" className="px-4 py-1 ml-2 text-base font-semibold text-white bg-orange-500 rounded hover:bg-amber-400">회원가입</button>
         <Link href="/" className="px-4 py-1 ml-2 text-base font-semibold text-white bg-gray-900 rounded hover:bg-amber-400">취소</Link>
       </div>
-    </form>    
+    </form>
   );
 }
