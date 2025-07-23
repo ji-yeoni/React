@@ -2,12 +2,24 @@
 
 import { createUser } from "@/data/actions/user";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
 export default function SignupForm() {
 
   // 서버 액션 호출
   const [ state, formAction, isLoading ] = useActionState(createUser, null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if(state?.ok){
+      alert('회원 가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+      router.replace('/login');
+    }else if(state?.ok === 0 && !state?.errors){ // 입력값 검증에러가 아닌 경우
+      alert(state?.message);
+    }
+  }, [state]);
 
   return (
     <form action={ formAction }>
@@ -33,7 +45,7 @@ export default function SignupForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-orange-400 dark:bg-gray-700"
           name="email"
         />
-        <p className="ml-2 mt-1 text-sm text-red-500 dark:text-red-400">이메일은 필수입니다.</p>
+        <p className="ml-2 mt-1 text-sm text-red-500 dark:text-red-400">{ state?.ok === 0 && state.errors?.email?.msg }</p>
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 dark:text-gray-200 mb-2" htmlFor="password">비밀번호</label>
@@ -45,7 +57,7 @@ export default function SignupForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-orange-400 dark:bg-gray-700"
           name="password"
         />
-        <p className="ml-2 mt-1 text-sm text-red-500 dark:text-red-400">비밀번호는 필수입니다.</p>
+        <p className="ml-2 mt-1 text-sm text-red-500 dark:text-red-400">{ state?.ok === 0 && state.errors?.password?.msg }</p>
       </div>
 
       <div className="mb-4">
